@@ -1,4 +1,5 @@
 <?php
+/** Binding */
 
 namespace Battis\SharedLogs\Database;
 
@@ -7,7 +8,7 @@ use Battis\SharedLogs\Object;
 use PDO;
 
 /**
- * A binding between a database table and an Object
+ * A binding between and Object and a database table
  *
  * @author Seth Battis <seth@battis.net>
  * @see Object
@@ -17,7 +18,8 @@ use PDO;
  */
 abstract class Binding
 {
-    const INCLUDE = 'include';
+    /** Canonical name for field in additional request parameters containing the list of additional sub-objects */
+    const INCLUDES = 'includes';
 
     /** @var PDO Database connector */
     private $database;
@@ -33,15 +35,16 @@ abstract class Binding
      *
      * @param PDO $database Database connector
      * @param string $databaseTable Name of the bound database table
-     * @param string $instantiatedObjectClass Fully-qualified class name of bound object (e.g. `Object::class`)
+     * @param string $type Fully-qualified class name of bound object (e.g. `Object::class` or
+     *        `"\Battis\SharedLogs\Object"`)
      *
      * @throws BindingException If `$databases` is not an instance of PDO
      */
-    public function __construct(PDO $database, $databaseTable, $instantiatedObjectClass)
+    public function __construct(PDO $database, $databaseTable, $type)
     {
         $this->initDatabase($database);
         $this->initDatabaseTable($databaseTable);
-        $this->initObject($instantiatedObjectClass);
+        $this->initObject($type);
     }
 
     /**
@@ -96,7 +99,8 @@ abstract class Binding
     /**
      * Initialize the bound object class
      *
-     * @param string $type Fully-qualified class name of bound object (e.g. `"Object::class"`)
+     * @param string $type Fully-qualified class name of bound object (e.g. `Object::class` or
+     *        `"\Battis\SharedLogs\Object"`)
      */
     private function initObject($type)
     {

@@ -1,4 +1,5 @@
 <?php
+/** EntriesBinding */
 
 namespace Battis\SharedLogs\Database\Bindings;
 
@@ -6,46 +7,98 @@ use Battis\SharedLogs\Database\Binding;
 use Battis\SharedLogs\Database\Bindings\Traits\EntriesBindingTrait;
 use Battis\SharedLogs\Database\Bindings\Traits\LogsBindingTrait;
 use Battis\SharedLogs\Database\Bindings\Traits\UsersBindingTrait;
+use Battis\SharedLogs\Exceptions\BindingException;
 use Battis\SharedLogs\Objects\Entry;
 use Battis\SharedLogs\Objects\Log;
 use Battis\SharedLogs\Objects\User;
 use PDO;
 
+/**
+ * A binding between `Entry` objects and the `entries` database table
+ *
+ * @author Seth Battis <seth@battis.net>
+ */
 class EntriesBinding extends Binding
 {
     use EntriesBindingTrait, LogsBindingTrait, UsersBindingTrait;
 
+    /**
+     * Constuct an entries binding from a database connector
+     *
+     * @param PDO $database
+     *
+     * @throws BindingException
+     */
     public function __construct(PDO $database)
     {
         parent::__construct($database, 'entries', Entry::class);
     }
 
-    public function get($id, $params = [self::INCLUDE => ['log', 'user']])
+    /**
+     * Retrieve an entry by ID
+     *
+     * By default, entries contain both log and user sub-objects.
+     *
+     * @param int|string $id
+     * @param array $params
+     *
+     * @return Entry|null
+     */
+    public function get($id, $params = [self::INCLUDES => ['log', 'user']])
     {
         return parent::get($id, $params);
     }
 
+    /**
+     * Instantiate an entry retrieved via `get()`
+     *
+     * @used-by EntriesBinding::instantiateListedObject()
+     *
+     * @param array $databaseRow
+     * @param array $params
+     *
+     * @return Entry
+     */
     protected function instantiateObject($databaseRow, $params)
     {
         $log = Entry::SUPPRESS_LOG;
         $user = Entry::SUPPRESS_USER;
-        if (!empty($params[self::INCLUDE]) && is_array($params[self::INCLUDE])) {
-            if (in_array('log', $params[self::INCLUDE])) {
-                $log = $this->logs()->get($databaseRow[Log::ID], [self::INCLUDE => []]);
+        if (!empty($params[self::INCLUDES]) && is_array($params[self::INCLUDES])) {
+            if (in_array('log', $params[self::INCLUDES])) {
+                $log = $this->logs()->get($databaseRow[Log::ID], [self::INCLUDES => []]);
             }
-            if (in_array('user', $params[self::INCLUDE])) {
-                $user = $this->users()->get($databaseRow[User::ID], [self::INCLUDE => []]);
+            if (in_array('user', $params[self::INCLUDES])) {
+                $user = $this->users()->get($databaseRow[User::ID], [self::INCLUDES => []]);
             }
         }
         return $this->object($databaseRow, $log, $user);
     }
 
+    /**
+     * Instantiate an entry retrieved via `all()`
+     *
+     * @param array $databaseRow
+     * @param array $params
+     *
+     * @uses EntriesBinding::instantiateObject()
+     *
+     * @return Entry
+     */
     protected function instantiateListedObject($databaseRow, $params)
     {
         return $this->instantiateObject($databaseRow, $params);
     }
 
-    public function listByLog($id, $params = [self::INCLUDE => ['user']])
+    /**
+     * Retrieve all entries in a specific log, by log ID
+     *
+     * By default, entries retrieived by this method contain user sub-object, but _not_ a log sub-object.
+     *
+     * @param integer|string $id Numeric log ID
+     * @param array $params (Optional) Associative array of additional request parameters
+     * @return Entry[]
+     */
+    public function listByLog($id, $params = [self::INCLUDES => ['user']])
     {
         $statement = $this->database()->prepare("
             SELECT *

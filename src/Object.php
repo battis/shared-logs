@@ -1,4 +1,5 @@
 <?php
+/** Object */
 
 namespace Battis\SharedLogs;
 
@@ -7,6 +8,8 @@ use JsonSerializable;
 
 /**
  * A generic object bound to a database table
+
+ * Implements `JsonSerializable` for easy output as a JSON response via the API.
  *
  * @author Seth Battis <seth@battis.net>
  */
@@ -15,15 +18,15 @@ abstract class Object implements JsonSerializable
     /**
      * Construct an object from the corresponding row of a bound database table
      *
-     * @param array $databaseRow Associative array
+     * @param array $databaseRecord Associative array of fields
      *
      * @uses Object::validateParams()
      *
-     * @throws ObjectException If no parameters are provided
+     * @throws ObjectException If an empty database record is provided
      */
-    public function __construct($databaseRow)
+    public function __construct($databaseRecord)
     {
-        foreach($this->validateParams($databaseRow) as $key => $value) {
+        foreach($this->validateParams($databaseRecord) as $key => $value) {
             $this->$key = $value;
         }
     }
@@ -40,7 +43,7 @@ abstract class Object implements JsonSerializable
         if (is_array($databaseRow)) {
             return $databaseRow;
         } else {
-            throw new ObjectException('No parameters provided to from which construct object', ObjectException::MISSING_ARGUMENTS);
+            throw new ObjectException('No parameters provided to from which construct object', ObjectException::MISSING_DATABASE_RECORD);
         }
     }
 

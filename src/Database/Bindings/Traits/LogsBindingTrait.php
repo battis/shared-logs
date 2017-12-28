@@ -1,16 +1,26 @@
 <?php
+/** LogsBindingTrait */
 
 namespace Battis\SharedLogs\Database\Bindings\Traits;
 
+use Battis\SharedLogs\Database\Binding;
 use Battis\SharedLogs\Database\Bindings\LogsBinding;
 
+/**
+ * Provide an as-needed LogsBinding instance
+ */
 trait LogsBindingTrait
 {
-    /* FIXME There must be a good way of indicating dependence on DatabaseTrait */
-
-    /** @var LogsBinding */
+    /** @var LogsBinding Binding between Log objects and the `logs` database table*/
     private $logs;
 
+    /**
+     * Provide an instance of LogsBinding
+     *
+     * @uses Binding::database()
+     *
+     * @return LogsBinding
+     */
     protected function logs()
     {
         if (empty($this->logs)) {

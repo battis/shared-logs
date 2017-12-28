@@ -1,16 +1,28 @@
 <?php
+/** DevicesBindingTrait */
 
 namespace Battis\SharedLogs\Database\Bindings\Traits;
 
+use Battis\SharedLogs\Database\Binding;
 use Battis\SharedLogs\Database\Bindings\DevicesBinding;
 
+/**
+ * Access to as-needed DevicesBinding instance
+ *
+ * @author Seth Battis<seth@battis.net>
+ */
 trait DevicesBindingTrait
 {
-    /* FIXME There must be a good way of indicating dependence on DatabaseTrait */
-
-    /** @var DevicesBinding */
+    /** @var DevicesBinding Binding between Device objects and `devices` database table */
     private $devices;
 
+    /**
+     * Provide an instance of of DevicesBinding
+     *
+     * @uses Binding::database()
+     *
+     * @return DevicesBinding
+     */
     protected function devices()
     {
         if (empty($this->devices)) {

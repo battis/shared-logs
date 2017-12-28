@@ -1,16 +1,28 @@
 <?php
+/** UsersBindingTrait */
 
 namespace Battis\SharedLogs\Database\Bindings\Traits;
 
+use Battis\SharedLogs\Database\Binding;
 use Battis\SharedLogs\Database\Bindings\UsersBinding;
 
+/**
+ * Provide an as-needed instance of UsersBinding
+ *
+ * @author Seth Battis <sseth@battis.net>
+ */
 trait UsersBindingTrait
 {
-    /* FIXME There must be a good way of indicating dependence on DatabaseTrait */
-
-    /** @var UsersBinding */
+    /** @var UsersBinding Binding between User objects and `users` database table */
     private $users;
 
+    /**
+     * Provide an instance of UsersBinding
+     *
+     * @uses Binding::$database()
+     *
+     * @return UsersBinding
+     */
     protected function users()
     {
         if (empty($this->users)) {

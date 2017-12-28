@@ -1,9 +1,10 @@
 <?php
+/** Exception */
 
 namespace Battis\SharedLogs;
 
 /**
- * Exceptions thrown by this data model
+ * Exceptions thrown by classes within this namespace
  *
  * @author Seth Battis <seth@battis.net>
  */
