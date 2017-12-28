@@ -1,0 +1,20 @@
+{
+  "name": "battis/shared-logs",
+  "description": "Web-accessible maintenance logs",
+  "license": "GPL-3.0",
+  "authors": [
+    {
+      "name": "Seth Battis",
+      "email": "seth@battis.net"
+    }
+  ],
+  "minimum-stability": "stable",
+  "autoload": {
+    "psr-4": {
+      "Battis\\SharedLogs\\": "src"
+    }
+  },
+  "require": {
+    "slim/slim": "^3.0"
+  }
+}
