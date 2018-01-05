@@ -21,6 +21,9 @@ class LogsBinding extends Binding
 {
     use LogsBindingTrait, DevicesBindingTrait, EntriesBindingTrait;
 
+    const INCLUDE_DEVICE = 'device';
+    const INCLUDE_ENTRIES = 'entries';
+
     /**
      * Construct a logs binding from a database connector
      *
@@ -42,7 +45,7 @@ class LogsBinding extends Binding
      *
      * @return Object[]
      */
-    public function all($params = [self::INCLUDES => 'device'])
+    public function all($params = [self::INCLUDES => [self::INCLUDE_DEVICE]])
     {
         return parent::all($params);
     }
@@ -57,7 +60,7 @@ class LogsBinding extends Binding
      *
      * @return Log|null
      */
-    public function get($id, $params = [self::INCLUDES => 'device'])
+    public function get($id, $params = [self::INCLUDES => [self::INCLUDE_DEVICE]])
     {
         return parent::get($id, $params);
     }
@@ -77,10 +80,10 @@ class LogsBinding extends Binding
         $device = Log::SUPPRESS_DEVICE;
         $entries = Log::SUPPRESS_ENTRIES;
         if (!empty($params[self::INCLUDES]) && is_array($params[self::INCLUDES])) {
-            if (in_array('device', $params[self::INCLUDES])) {
+            if (in_array(self::INCLUDE_DEVICE, $params[self::INCLUDES])) {
                 $device = $this->devices()->get($databaseRow[Device::ID], [self::INCLUDES => []]);
             }
-            if (in_array('entries', $params[self::INCLUDES])) {
+            if (in_array(self::INCLUDE_ENTRIES, $params[self::INCLUDES])) {
                 $entries = $this->entries()->listByLog($databaseRow['id']);
             }
         }

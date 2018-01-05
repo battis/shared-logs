@@ -6,6 +6,7 @@ use Battis\SharedLogs\Database\Bindings\DevicesBinding;
 use Battis\SharedLogs\Database\Bindings\EntriesBinding;
 use Battis\SharedLogs\Database\Bindings\LogsBinding;
 use Battis\SharedLogs\Database\Bindings\UsersBinding;
+use Battis\SharedLogs\Objects\User;
 use Slim\App;
 use Slim\Handlers\Strategies\RequestResponseArgs;
 use Slim\Http\Request;
@@ -53,6 +54,20 @@ $container['entries'] = function ($c) {
 $container['users'] = function ($c) {
     return new UsersBinding($c->pdo);
 };
+
+/* "lazy CORS" */
+$app->options('/{routes:.+}', function ($request, $response, $args) {
+    return $response;
+});
+
+$app->add(function (Request $req, Response $res, callable $next) {
+    $response = $next($req, $res);
+    return $response
+        ->withHeader('Access-Control-Allow-Origin', '*') // FIXME OMG!
+        ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+        ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+});
+
 
 /*
  * define routes
@@ -120,6 +135,9 @@ $app->group('/users', function () {
     });
     $this->get(id_PATTERN, function (Request $request, Response $response, $id) {
         return $response->withJson($this->users->get($id));
+    });
+    $this->get('/{screen_name:\w{' . User::SCREEN_NAME_MINIMUM_LENGTH . ',}}', function (Request $request, Response $response, $screen_name) {
+       return $response->withJson($this->users->lookupByScreenName($screen_name));
     });
     $this->put(id_PATTERN, function (Request $request, Response $response, $id) {
         return $response->withJson($this->users->update($id));

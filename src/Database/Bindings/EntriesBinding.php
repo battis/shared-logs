@@ -22,6 +22,9 @@ class EntriesBinding extends Binding
 {
     use EntriesBindingTrait, LogsBindingTrait, UsersBindingTrait;
 
+    const INCLUDE_USER = 'user';
+    const INCLUDE_LOG = 'log';
+
     /**
      * Constuct an entries binding from a database connector
      *
@@ -44,7 +47,7 @@ class EntriesBinding extends Binding
      *
      * @return Entry|null
      */
-    public function get($id, $params = [self::INCLUDES => ['log', 'user']])
+    public function get($id, $params = [self::INCLUDES => [self::INCLUDE_LOG, self::INCLUDE_USER]])
     {
         return parent::get($id, $params);
     }
@@ -64,10 +67,10 @@ class EntriesBinding extends Binding
         $log = Entry::SUPPRESS_LOG;
         $user = Entry::SUPPRESS_USER;
         if (!empty($params[self::INCLUDES]) && is_array($params[self::INCLUDES])) {
-            if (in_array('log', $params[self::INCLUDES])) {
+            if (in_array(self::INCLUDE_LOG, $params[self::INCLUDES])) {
                 $log = $this->logs()->get($databaseRow[Log::ID], [self::INCLUDES => []]);
             }
-            if (in_array('user', $params[self::INCLUDES])) {
+            if (in_array(self::INCLUDE_USER, $params[self::INCLUDES])) {
                 $user = $this->users()->get($databaseRow[User::ID], [self::INCLUDES => []]);
             }
         }
@@ -98,7 +101,7 @@ class EntriesBinding extends Binding
      * @param array $params (Optional) Associative array of additional request parameters
      * @return Entry[]
      */
-    public function listByLog($id, $params = [self::INCLUDES => ['user']])
+    public function listByLog($id, $params = [self::INCLUDES => [self::INCLUDE_USER]])
     {
         $statement = $this->database()->prepare("
             SELECT *

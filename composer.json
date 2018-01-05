@@ -1,5 +1,5 @@
 {
-  "name": "battis/shared-logs",
+  "name": "battis/shared-logs-api",
   "description": "Web-accessible maintenance logs",
   "license": "GPL-3.0",
   "authors": [

@@ -19,6 +19,8 @@ class DevicesBinding extends Binding
 {
     use DevicesBindingTrait, LogsBindingTrait;
 
+    const INCLUDE_LOGS = 'logs';
+
     /**
      * Construct a device binding from a database connector
      *
@@ -40,7 +42,7 @@ class DevicesBinding extends Binding
      *
      * @return Device[]
      */
-    public function all($params = [self::INCLUDES => ['logs']])
+    public function all($params = [self::INCLUDES => [self::INCLUDE_LOGS]])
     {
         return parent::all($params);
     }
@@ -69,7 +71,7 @@ class DevicesBinding extends Binding
      *
      * @return Device|null
      */
-    public function get($id, $params = [self::INCLUDES => ['logs']])
+    public function get($id, $params = [self::INCLUDES => [self::INCLUDE_LOGS]])
     {
         return parent::get($id, $params);
     }
@@ -91,9 +93,9 @@ class DevicesBinding extends Binding
      */
     protected function instantiateObject($databaseRow, $params)
     {
-        $logs = [];
+        $logs = Device::SUPPRESS_LOGS;
         if (!empty($params[self::INCLUDES]) && is_array($params[self::INCLUDES])) {
-            if (in_array('logs', $params[self::INCLUDES])) {
+            if (in_array(self::INCLUDE_LOGS, $params[self::INCLUDES])) {
                 $logs = $this->logs()->listByDevice($databaseRow['id']);
             }
         }
