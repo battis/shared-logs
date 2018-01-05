@@ -42,7 +42,7 @@ class DevicesBinding extends Binding
      *
      * @return Device[]
      */
-    public function all($params = [self::INCLUDES => [self::INCLUDE_LOGS]])
+    public function all($params = [self::INCLUDE => [self::INCLUDE_LOGS]])
     {
         return parent::all($params);
     }
@@ -71,7 +71,7 @@ class DevicesBinding extends Binding
      *
      * @return Device|null
      */
-    public function get($id, $params = [self::INCLUDES => [self::INCLUDE_LOGS]])
+    public function get($id, $params = [self::INCLUDE => [self::INCLUDE_LOGS]])
     {
         return parent::get($id, $params);
     }
@@ -82,7 +82,7 @@ class DevicesBinding extends Binding
      * This will process the `'includes'` field of `$params` (an array) and, if it contains the term `'logs'`, the list
      * of logs sub-object will be included in this device object.
      *
-     * @see Binding::INCLUDES
+     * @see Binding::INCLUDE
      *
      * @used-by DevicesBinding::instantiateListedObject()
      *
@@ -94,8 +94,8 @@ class DevicesBinding extends Binding
     protected function instantiateObject($databaseRow, $params)
     {
         $logs = Device::SUPPRESS_LOGS;
-        if (!empty($params[self::INCLUDES]) && is_array($params[self::INCLUDES])) {
-            if (in_array(self::INCLUDE_LOGS, $params[self::INCLUDES])) {
+        if (!empty($params[self::INCLUDE]) && is_array($params[self::INCLUDE])) {
+            if (in_array(self::INCLUDE_LOGS, $params[self::INCLUDE])) {
                 $logs = $this->logs()->listByDevice($databaseRow['id']);
             }
         }

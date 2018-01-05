@@ -47,7 +47,7 @@ class EntriesBinding extends Binding
      *
      * @return Entry|null
      */
-    public function get($id, $params = [self::INCLUDES => [self::INCLUDE_LOG, self::INCLUDE_USER]])
+    public function get($id, $params = [self::INCLUDE => [self::INCLUDE_LOG, self::INCLUDE_USER]])
     {
         return parent::get($id, $params);
     }
@@ -66,12 +66,12 @@ class EntriesBinding extends Binding
     {
         $log = Entry::SUPPRESS_LOG;
         $user = Entry::SUPPRESS_USER;
-        if (!empty($params[self::INCLUDES]) && is_array($params[self::INCLUDES])) {
-            if (in_array(self::INCLUDE_LOG, $params[self::INCLUDES])) {
-                $log = $this->logs()->get($databaseRow[Log::ID], [self::INCLUDES => []]);
+        if (!empty($params[self::INCLUDE]) && is_array($params[self::INCLUDE])) {
+            if (in_array(self::INCLUDE_LOG, $params[self::INCLUDE])) {
+                $log = $this->logs()->get($databaseRow[Log::ID], [self::INCLUDE => []]);
             }
-            if (in_array(self::INCLUDE_USER, $params[self::INCLUDES])) {
-                $user = $this->users()->get($databaseRow[User::ID], [self::INCLUDES => []]);
+            if (in_array(self::INCLUDE_USER, $params[self::INCLUDE])) {
+                $user = $this->users()->get($databaseRow[User::ID], [self::INCLUDE => []]);
             }
         }
         return $this->object($databaseRow, $log, $user);
@@ -101,7 +101,7 @@ class EntriesBinding extends Binding
      * @param array $params (Optional) Associative array of additional request parameters
      * @return Entry[]
      */
-    public function listByLog($id, $params = [self::INCLUDES => [self::INCLUDE_USER]])
+    public function listByLog($id, $params = [self::INCLUDE => [self::INCLUDE_USER]])
     {
         $statement = $this->database()->prepare("
             SELECT *

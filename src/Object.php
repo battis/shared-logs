@@ -56,6 +56,6 @@ abstract class Object implements JsonSerializable
      */
     public function jsonSerialize()
     {
-        return array_merge(['type' => static::class], get_object_vars($this));
+        return get_object_vars($this);
     }
 }

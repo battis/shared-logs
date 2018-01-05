@@ -19,7 +19,7 @@ use PDO;
 abstract class Binding
 {
     /** Canonical name for field in additional request parameters containing the list of additional sub-objects */
-    const INCLUDES = 'includes';
+    const INCLUDE = 'include';
 
     /** @var PDO Database connector */
     private $database;

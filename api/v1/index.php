@@ -63,87 +63,92 @@ $app->options('/{routes:.+}', function ($request, $response, $args) {
 $app->add(function (Request $req, Response $res, callable $next) {
     $response = $next($req, $res);
     return $response
-        ->withHeader('Access-Control-Allow-Origin', '*') // FIXME OMG!
+        ->withHeader('Access-Control-Allow-Origin', '*') /* FIXME OMG! */
         ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
         ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
 });
 
+function callWithNonEmptyParams(callable $method, ...$params) {
+    return $method(...array_filter($params, function ($param) {
+        return !empty($param);
+    }));
+}
 
 /*
  * define routes
  */
 $app->group('/devices', function () {
     $this->post('', function (Request $request, Response $response) {
-        return $response->withJson($this->devices->create($request->getParsedBody()));
+        return $response->withJson(callWithNonEmptyParams([$this->devices, 'create'], $request->getParsedBody(), $request->getParams()));
     });
     $this->get('', function (Request $request, Response $response) {
-        return $response->withJson($this->devices->all());
+        return $response->withJson(callWithNonEmptyParams([$this->devices, 'all'], $request->getParams()));
     });
     $this->get(id_PATTERN, function (Request $request, Response $response, $id) {
-        return $response->withJson($this->devices->get($id));
+        return $response->withJson(callWithNonEmptyParams([$this->devices, 'get'], $id, $request->getParams()));
     });
     $this->put(id_PATTERN, function (Request $request, Response $response, $id) {
-        return $response->withJson($this->devices->update($id));
+        return $response->withJson(callWithNonEmptyParams([$this->devices, 'update'], $id, $request->getParams()));
     });
     $this->delete(id_PATTERN, function (Request $request, Response $response, $id) {
-        return $response->withJson($this->devices->delete($id));
+        return $response->withJson(callWithNonEmptyParams([$this->devices, 'delete'], $id, $request->getParams()));
     });
     $this->get(id_PATTERN . '/logs', function (Request $request, Response $response, $id) {
-        return $response->withJson($this->logs->listByDevice($id));
+        return $response->withJson(callWithNonEmptyParams([$this->logs, 'listByDevice'], $id, $request->getParams()));
     });
 });
 $app->group('/logs', function () {
     $this->post('', function (Request $request, Response $response) {
-        return $response->withJson($this->logs->create($request->getParsedBody()));
+        return $response->withJson(callWithNonEmptyParams([$this->logs, 'create'], $request->getParsedBody(), $request->getParams()));
     });
     $this->get('', function (Request $request, Response $response) {
-        return $response->withJson($this->logs->all());
+        return $response->withJson(callWithNonEmptyParams([$this->logs, 'all'], $request->getParams()));
     });
     $this->get(id_PATTERN, function (Request $request, Response $response, $id) {
-        return $response->withJson($this->logs->get($id));
+        return $response->withJson(callWithNonEmptyParams([$this->logs, 'get'], $id, $request->getParams()));
     });
     $this->put(id_PATTERN, function (Request $request, Response $response, $id) {
-        return $response->withJson($this->logs->update($id));
+        return $response->withJson(callWithNonEmptyParams([$this->logs, 'update'], $id, $request->getParams()));
     });
     $this->delete(id_PATTERN, function (Request $request, Response $response, $id) {
-        return $response->withJson($this->logs->delete($id));
+        return $response->withJson(callWithNonEmptyParams([$this->logs, 'delete'], $id, $request->getParams()));
     });
     $this->get(id_PATTERN . '/entries', function (Request $request, Response $response, $id) {
-        return $response->withJson($this->entries->listByLog($id));
+        return $response->withJson(callWithNonEmptyParams([$this->entries, 'listByLog'], $id, $request->getParams()));
     });
 });
 $app->group('/entries', function () {
     $this->post('', function (Request $request, Response $response){
-        return $response->withJson($this->entries->create($request->getParsedBody()));
+        return $response->withJson(callWithNonEmptyParams([$this->entries, 'create'], $request->getParsedBody(), $request->getParams()));
     });
     $this->get(id_PATTERN, function (Request $request, Response $response, $id) {
-        return $response->withJson($this->entries->get($id));
+        return $response->withJson(callWithNonEmptyParams([$this->entries, 'get'], $id, $request->getParams()));
     });
     $this->put(id_PATTERN, function (Request $request, Response $response, $id) {
-        return $response->withJson($this->entries->update($id));
+        return $response->withJson(callWithNonEmptyParams([$this->entries, 'update'], $id, $request->getParams()));
     });
     $this->delete(id_PATTERN, function (Request $request, Response $response, $id) {
-        return $response->withJson($this->entries->delete($id));
+        return $response->withJson(callWithNonEmptyParams([$this->entries, 'delete'], $id, $request->getParams()));
     });
 });
 $app->group('/users', function () {
     $this->post('', function (Request $request, Response $response) {
-        return $response->withJson($this->users->create($request->getParsedBody()));
+        return $response->withJson(callWithNonEmptyParams([$this->users, 'create'], $request->getParsedBody(), $request->getParams()));
     });
     $this->get('', function (Request $request, Response $response) {
-        return $response->withJson($this->users->all());
+        return $response->withJson(callWithNonEmptyParams([$this->users, 'all'], $request->getParams()));
     });
     $this->get(id_PATTERN, function (Request $request, Response $response, $id) {
-        return $response->withJson($this->users->get($id));
+        return $response->withJson(callWithNonEmptyParams([$this->users, 'get'], $id, $request->getParams()));
     });
     $this->get('/{screen_name:\w{' . User::SCREEN_NAME_MINIMUM_LENGTH . ',}}', function (Request $request, Response $response, $screen_name) {
-       return $response->withJson($this->users->lookupByScreenName($screen_name));
+       return $response->withJson(callWithNonEmptyParams([$this->users, 'lookupByScreenName'], $screen_name, $request->getParams()));
     });
     $this->put(id_PATTERN, function (Request $request, Response $response, $id) {
-        return $response->withJson($this->users->update($id));
+        return $response->withJson(callWithNonEmptyParams([$this->users, 'update'], $id, $request->getParams()));
     });
     $this->delete(id_PATTERN, function (Request $request, Response $response, $id) {
-        return $response->withJson($this->users->delete($id));
+        return $response->withJson(callWithNonEmptyParams([$this->users, 'delete'], $id, $request->getParams()));
     });
 });
 

@@ -45,7 +45,7 @@ class LogsBinding extends Binding
      *
      * @return Object[]
      */
-    public function all($params = [self::INCLUDES => [self::INCLUDE_DEVICE]])
+    public function all($params = [self::INCLUDE => [self::INCLUDE_DEVICE]])
     {
         return parent::all($params);
     }
@@ -60,7 +60,7 @@ class LogsBinding extends Binding
      *
      * @return Log|null
      */
-    public function get($id, $params = [self::INCLUDES => [self::INCLUDE_DEVICE]])
+    public function get($id, $params = [self::INCLUDE => [self::INCLUDE_DEVICE]])
     {
         return parent::get($id, $params);
     }
@@ -79,11 +79,11 @@ class LogsBinding extends Binding
     {
         $device = Log::SUPPRESS_DEVICE;
         $entries = Log::SUPPRESS_ENTRIES;
-        if (!empty($params[self::INCLUDES]) && is_array($params[self::INCLUDES])) {
-            if (in_array(self::INCLUDE_DEVICE, $params[self::INCLUDES])) {
-                $device = $this->devices()->get($databaseRow[Device::ID], [self::INCLUDES => []]);
+        if (!empty($params[self::INCLUDE]) && is_array($params[self::INCLUDE])) {
+            if (in_array(self::INCLUDE_DEVICE, $params[self::INCLUDE])) {
+                $device = $this->devices()->get($databaseRow[Device::ID], [self::INCLUDE => []]);
             }
-            if (in_array(self::INCLUDE_ENTRIES, $params[self::INCLUDES])) {
+            if (in_array(self::INCLUDE_ENTRIES, $params[self::INCLUDE])) {
                 $entries = $this->entries()->listByLog($databaseRow['id']);
             }
         }
@@ -119,7 +119,7 @@ class LogsBinding extends Binding
      *
      * @return Log[]
      */
-    public function listByDevice($id, $params = [self::INCLUDES => []])
+    public function listByDevice($id, $params = [self::INCLUDE => []])
     {
         $statement = $this->database()->prepare("
             SELECT *
