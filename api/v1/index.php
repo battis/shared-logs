@@ -63,7 +63,7 @@ $app->options('/{routes:.+}', function ($request, $response, $args) {
 $app->add(function (Request $req, Response $res, callable $next) {
     $response = $next($req, $res);
     return $response
-        ->withHeader('Access-Control-Allow-Origin', '*') /* FIXME OMG! */
+        ->withHeader('Access-Control-Allow-Origin', ($_SERVER['HTTPS'] ? 'https://' : 'http://') . $_SERVER['SERVER_NAME'])
         ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
         ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
 });
@@ -150,6 +150,12 @@ $app->group('/users', function () {
     $this->delete(id_PATTERN, function (Request $request, Response $response, $id) {
         return $response->withJson(callWithNonEmptyParams([$this->users, 'delete'], $id, $request->getParams()));
     });
+});
+
+/* finish lazy CORS */
+$app->map(['GET', 'POST', 'PUT', 'DELETE'], '/{routes:.+}', function($req, $res) {
+    $handler = $this->notFoundHandler;
+    return $handler($req, $res);
 });
 
 $app->run();
