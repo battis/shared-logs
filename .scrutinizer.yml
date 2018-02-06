@@ -1,9 +1,8 @@
 filter:
-    excluded_paths: [doc/*, examples/*, tests/*]
+    excluded_paths: [.idea/*, doc/*, examples/*, tests/*]
 
 checks:
     php: true
-    javascript: true
 
 tools:
     php_code_sniffer:
