@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 use Battis\SharedLogs\Database\Bindings\DevicesBinding;
 use Battis\SharedLogs\Database\Bindings\EntriesBinding;
@@ -37,7 +37,7 @@ $container['pdo'] = function ($c) {
 };
 
 /* placeholders as separate arguments */
-$container['foundHandler'] = function() {
+$container['foundHandler'] = function () {
     return new RequestResponseArgs();
 };
 
@@ -55,20 +55,40 @@ $container['users'] = function ($c) {
     return new UsersBinding($c->pdo);
 };
 
+$container['cors'] = function ($c) {
+    return [
+        'allow-origin' => (empty($c['settings']['cors']['allow-origin'])
+            ? ($_SERVER['HTTPS'] ? 'https://' : 'http://') . $_SERVER['SERVER_NAME']
+            : $c['settings']['cors']['allow-origin']
+        ),
+        'allow-headers' => (empty($c['settings']['cors']['allow-headers'])
+            ? 'X-Requested-With, Content-Type, Accept, Origin, Authorization'
+            : $c['settings']['cors']['allow-headers']
+        ),
+        'allow-methods' => (empty($c['settings']['cors']['allow-methods'])
+            ? 'GET, POST, PUT, DELETE, OPTIONS'
+            : $c['settings']['cors']['allow-headers']
+        )
+    ];
+};
+
+$apiPrefix = $container['settings']['api']['prefix'];
+
 /* "lazy CORS" */
-$app->options('/{routes:.+}', function ($request, $response, $args) {
+$app->options($apiPrefix . '/{routes:.+}', function ($request, $response, $args) {
     return $response;
 });
 
 $app->add(function (Request $req, Response $res, callable $next) {
     $response = $next($req, $res);
     return $response
-        ->withHeader('Access-Control-Allow-Origin', ($_SERVER['HTTPS'] ? 'https://' : 'http://') . $_SERVER['SERVER_NAME'])
-        ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
-        ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        ->withHeader('Access-Control-Allow-Origin', $this->cors['allow-origin'])
+        ->withHeader('Access-Control-Allow-Headers', $this->cors['allow-headers'])
+        ->withHeader('Access-Control-Allow-Methods', $this->cors['allow-methods']);
 });
 
-function callWithNonEmptyParams(callable $method, ...$params) {
+function callWithNonEmptyParams(callable $method, ...$params)
+{
     return $method(...array_filter($params, function ($param) {
         return !empty($param);
     }));
@@ -77,7 +97,7 @@ function callWithNonEmptyParams(callable $method, ...$params) {
 /*
  * define routes
  */
-$app->group('/devices', function () {
+$app->group($apiPrefix . '/devices', function () {
     $this->post('', function (Request $request, Response $response) {
         return $response->withJson(callWithNonEmptyParams([$this->devices, 'create'], $request->getParsedBody(), $request->getParams()));
     });
@@ -97,7 +117,7 @@ $app->group('/devices', function () {
         return $response->withJson(callWithNonEmptyParams([$this->logs, 'listByDevice'], $id, $request->getParams()));
     });
 });
-$app->group('/logs', function () {
+$app->group($apiPrefix . '/logs', function () {
     $this->post('', function (Request $request, Response $response) {
         return $response->withJson(callWithNonEmptyParams([$this->logs, 'create'], $request->getParsedBody(), $request->getParams()));
     });
@@ -117,8 +137,8 @@ $app->group('/logs', function () {
         return $response->withJson(callWithNonEmptyParams([$this->entries, 'listByLog'], $id, $request->getParams()));
     });
 });
-$app->group('/entries', function () {
-    $this->post('', function (Request $request, Response $response){
+$app->group($apiPrefix . '/entries', function () {
+    $this->post('', function (Request $request, Response $response) {
         return $response->withJson(callWithNonEmptyParams([$this->entries, 'create'], $request->getParsedBody(), $request->getParams()));
     });
     $this->get(id_PATTERN, function (Request $request, Response $response, $id) {
@@ -131,7 +151,7 @@ $app->group('/entries', function () {
         return $response->withJson(callWithNonEmptyParams([$this->entries, 'delete'], $id, $request->getParams()));
     });
 });
-$app->group('/users', function () {
+$app->group($apiPrefix . '/users', function () {
     $this->post('', function (Request $request, Response $response) {
         return $response->withJson(callWithNonEmptyParams([$this->users, 'create'], $request->getParsedBody(), $request->getParams()));
     });
@@ -142,7 +162,7 @@ $app->group('/users', function () {
         return $response->withJson(callWithNonEmptyParams([$this->users, 'get'], $id, $request->getParams()));
     });
     $this->get('/{screen_name:\w{' . User::SCREEN_NAME_MINIMUM_LENGTH . ',}}', function (Request $request, Response $response, $screen_name) {
-       return $response->withJson(callWithNonEmptyParams([$this->users, 'lookupByScreenName'], $screen_name, $request->getParams()));
+        return $response->withJson(callWithNonEmptyParams([$this->users, 'lookupByScreenName'], $screen_name, $request->getParams()));
     });
     $this->put(id_PATTERN, function (Request $request, Response $response, $id) {
         return $response->withJson(callWithNonEmptyParams([$this->users, 'update'], $id, $request->getParams()));
@@ -153,7 +173,7 @@ $app->group('/users', function () {
 });
 
 /* finish lazy CORS */
-$app->map(['GET', 'POST', 'PUT', 'DELETE'], '/{routes:.+}', function($req, $res) {
+$app->map(['GET', 'POST', 'PUT', 'DELETE'], $apiPrefix . '/{routes:.+}', function ($req, $res) {
     $handler = $this->notFoundHandler;
     return $handler($req, $res);
 });

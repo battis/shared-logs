@@ -3,5 +3,11 @@
     "dsn": "mysql:host=localhost;dbname=shared-logs",
     "user": "shared-logs",
     "password": "s00p3rS3KR37"
+  },
+  "api": {
+    "prefix": "/api/v1"
+  },
+  "cors": {
+    "allow-origin": "http://localhost"
   }
 }
