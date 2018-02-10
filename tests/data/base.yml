@@ -1,0 +1,46 @@
+devices:
+    -
+        id: 1
+        manufacturer: "Epilog"
+        model: "Helix 60W"
+        name: "Laser Cutter"
+        created: "2018-01-01 11:21:31"
+        modified: "2018-02-02 12:22:32"
+    -
+        id: 2
+        manufacturer: "Leapfrog"
+        model: "Creatr XL"
+        name: "Leapfrog"
+        created: "2018-01-01 12:22:32"
+        modified: "2018-02-02 13:23:33"
+
+logs:
+    -
+        id: 1
+        name: "Laser Cutter Maintenance"
+        device_id: 1
+        created: "2018-02-03 13:23:33"
+        modified: "2018-04-05 14:24:34"
+    -
+        id: 2
+        name: "Laser Cutter Cleaning"
+        device_id: 123
+        created: "2018-03-04 15:25:35"
+        modified: "2018-05-06 16:26:36"
+    -
+        id: 3
+        name: "Leapfrog Maintenance"
+        device_id: 2
+        created: "2018-03-03 17:27:37"
+        modified: "2017-04-04 18:28:38"
+users:
+    -
+        id: 1
+        screen_name: "Seth_Battis"
+        username: "sethbattis"
+        password: "db085edeecec478cae9e878a101a389e4139bcb6d3a6b1a75b8175c0ecd8cf23"
+        first_name: "Seth"
+        last_name: "Battis"
+        email: "seth@battis.net"
+        created: "2018-04-04 11:21:31"
+        modified: "2018-05-05 12:22:32"

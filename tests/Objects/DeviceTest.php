@@ -1,81 +1,97 @@
 <?php
 
-namespace Tests\Objects;
+namespace Battis\SharedLogs\Tests\Objects;
 
+use Battis\SharedLogs\AbstractObject;
 use Battis\SharedLogs\Objects\Device;
 use Battis\SharedLogs\Objects\Log;
+use Battis\SharedLogs\Tests\AbstractObjectTest;
 use PHPUnit\Framework\TestCase;
 
-class DeviceTest extends TestCase
+class DeviceTest extends AbstractObjectTest
 {
-    private static $SIMPLE_RECORD = [
-        'id' => '1',
-        'manufacturer' => 'Foo',
-        'model' => 'Bar',
-        'name' => 'Baz',
-        'created' => '2018-02-06 12:34:56',
-        'modified' => '2018-02-07 13:57:00'
-    ];
+    protected $device;
+    protected $singleLog;
+    protected $logs;
 
-    private static $LOGS = [[
-       'id' => '2',
-       'name' => 'Baz Maintenance',
-        'device_id' => '1',
-        'created' => '2018-02-08 14:25:36',
-        'modified' => '2018-02-09 15:26:37'
-    ]];
+    protected function setUp()
+    {
+        parent::setUp();
+        $this->device = self::$records['devices'][0];
+        $this->singleLog = [new Log(self::$records['logs'][0])];
+        $this->logs = [new Log(self::$records['logs'][0]), new Log(self::$records['logs'][0])];
+    }
 
     public function testInstantiation()
     {
-        $d = new Device(self::$SIMPLE_RECORD);
+        $d = new Device($this->device);
         $this->assertInstanceOf(Device::class, $d);
-        $this->assertEquals(self::$SIMPLE_RECORD['id'], $d->id);
-        $this->assertEquals(self::$SIMPLE_RECORD['manufacturer'], $d->manufacturer);
-        $this->assertEquals(self::$SIMPLE_RECORD['model'], $d->model);
-        $this->assertEquals(self::$SIMPLE_RECORD['name'], $d->name);
-        $this->assertEquals(self::$SIMPLE_RECORD['created'], $d->created);
-        $this->assertEquals(self::$SIMPLE_RECORD['modified'], $d->modified);
-        return $d;
-    }
-
-    public function testInstantiationWithLogs()
-    {
-        $logs = [];
-        foreach (self::$LOGS as $log) {
-            $logs[] = new Log($log);
-        }
-        $d = new Device(self::$SIMPLE_RECORD, $logs);
-        $this->assertInstanceOf(Device::class, $d);
-        $this->assertEquals(self::$SIMPLE_RECORD['id'], $d->id);
-        $this->assertEquals(self::$SIMPLE_RECORD['manufacturer'], $d->manufacturer);
-        $this->assertEquals(self::$SIMPLE_RECORD['model'], $d->model);
-        $this->assertEquals(self::$SIMPLE_RECORD['name'], $d->name);
-        $this->assertEquals(self::$SIMPLE_RECORD['created'], $d->created);
-        $this->assertEquals(self::$SIMPLE_RECORD['modified'], $d->modified);
-        $this->assertTrue(is_array($d->logs));
-        foreach ($d->logs as $log) {
-            $this->assertInstanceOf(Log::class, $log);
-        }
+        $this->reconcileFields($this->device, $d);
         return $d;
     }
 
     /**
      * @depends testInstantiation
      */
-    public function testJsonSerialization(Device $d)
+    public function testJsonSerialization(AbstractObject $d)
     {
         $json = json_encode($d);
         $this->assertJson($json);
-        $this->assertJsonStringEqualsJsonString(json_encode(self::$SIMPLE_RECORD), $json);
+        $this->assertJsonStringEqualsJsonString(json_encode(self::$records['devices'][0]), $json);
+    }
+
+    public function testInstantiationWithSingleLog()
+    {
+        $d = new Device($this->device, $this->singleLog);
+        $this->assertInstanceOf(Device::class, $d);
+        $this->reconcileFields($this->device, $d);
+        $this->assertEquals(1, count($d->logs));
+        $this->reconcileFields($this->singleLog[0], $d->logs[0]);
+
+        return $d;
     }
 
     /**
-     * @depends testInstantiationWithLogs
+     * @depends testInstantiationWithSingleLog
      */
-    public function testJsonSerializationWithLogs(Device $d)
+    public function testJsonSerializationWithSingleLog(AbstractObject $d)
     {
         $json = json_encode($d);
         $this->assertJson($json);
-        $this->assertJsonStringEqualsJsonString(json_encode(array_merge(self::$SIMPLE_RECORD, ['logs' => self::$LOGS])), $json);
+        $this->assertJsonStringEqualsJsonString(
+            json_encode(array_merge(
+                $this->device,
+                ['logs' => $this->singleLog]
+            )),
+            $json
+        );
+    }
+
+    public function testInstantiationWithMultipleLogs()
+    {
+        $d = new Device($this->device, $this->logs);
+        $this->assertInstanceOf(Device::class, $d);
+        $this->reconcileFields($this->device, $d);
+        for ($i = 0; $i < count($this->logs); $i++) {
+            $this->reconcileFields($this->logs[$i], $d->logs[$i]);
+        }
+
+        return $d;
+    }
+
+    /**
+     * @depends testInstantiationWithMultipleLogs
+     */
+    public function testJsonSerializationWithMultipleLogs(AbstractObject $d)
+    {
+        $json = json_encode($d);
+        $this->assertJson($json);
+        $this->assertJsonStringEqualsJsonString(
+            json_encode(array_merge(
+                $this->device,
+                ['logs' => $this->logs]
+            )),
+            $json
+        );
     }
 }

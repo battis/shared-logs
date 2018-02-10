@@ -18,9 +18,10 @@
     "slim/slim": "^3.0"
   },
   "autoload-dev": {
-    "Tests\\": "tests/"
+    "Battis\\SharedLogs\\Tests\\": "tests"
   },
   "require-dev": {
-    "phpunit/dbunit": "^3.0"
+    "phpunit/dbunit": "^3.0",
+    "symfony/yaml": "^4.0"
   }
 }
