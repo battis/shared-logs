@@ -16,5 +16,11 @@
   },
   "require": {
     "slim/slim": "^3.0"
+  },
+  "autoload-dev": {
+    "Tests\\": "tests/"
+  },
+  "require-dev": {
+    "phpunit/dbunit": "^3.0"
   }
 }

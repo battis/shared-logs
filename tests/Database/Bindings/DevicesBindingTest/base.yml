@@ -1,0 +1,12 @@
+  devices:
+    -
+      id: 1
+      manufacturer:
+      model:
+      name: "Foo"
+      created: 2018-02-06 01:23:45
+      modified: 2018-02-07 12:34:56
+    -
+      id: 2
+      manufacturer: "Foo"
+      model: "Bar Baz"
