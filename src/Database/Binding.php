@@ -35,7 +35,7 @@ abstract class Binding
      *
      * @param PDO $database Database connector
      * @param string $databaseTable Name of the bound database table
-     * @param string $type Fully-qualified class name of bound object (e.g. `Object::class` or
+     * @param string $type Fully-qualified class name of bound object (e.g. `AbstractObject::class` or
      *        `"\Battis\SharedLogs\Object"`)
      *
      * @throws BindingException If `$databases` is not an instance of PDO
@@ -117,7 +117,7 @@ abstract class Binding
      * Instantiate the bound object
      *
      * @param array ...$params
-     * @return Object
+     * @return AbstractObject
      */
     protected function object(...$params)
     {
@@ -132,7 +132,7 @@ abstract class Binding
      *
      * @uses Binding::instantiateObject()
      *
-     * @return Object|null `NULL` if no object is found in database
+     * @return AbstractObject|null `NULL` if no object is found in database
      */
     public function get($id, $params = [])
     {
@@ -161,7 +161,7 @@ abstract class Binding
      * @param array $databaseRow Bound row of database table
      * @param array $params Associative array of additional request parameters
      *
-     * @return Object
+     * @return AbstractObject
      *
      * @see Binding::instantiateListedObject()
      */
@@ -178,7 +178,7 @@ abstract class Binding
      * @uses Binding::listOrder()
      * @uses Binding::instantiateListedObject()
      *
-     * @return Object[]
+     * @return AbstractObject[]
      */
     public function all($params = [])
     {
@@ -220,7 +220,7 @@ abstract class Binding
      * @param array $databaseRow Associative array of fields from database to initialize object
      * @param array $params Associative array of additional request parameters
      *
-     * @return Object
+     * @return AbstractObject
      *
      * @see Binding::instantiateObject()
      */
@@ -237,7 +237,7 @@ abstract class Binding
      *
      * @uses Binding::getCreatedObject()
      *
-     * @return Object|null `NULL` if the object cannot be created in the database
+     * @return AbstractObject|null `NULL` if the object cannot be created in the database
      */
     public function create($params)
     {
@@ -264,7 +264,7 @@ abstract class Binding
      * @param integer|string $id Numeric ID of recently created object in database
      * @param array $params Associative array of additional request parameters
      *
-     * @return Object|null `NULL` if object cannot be retrieved from database
+     * @return AbstractObject|null `NULL` if object cannot be retrieved from database
      *
      * @see Binding::getUpdatedObject()
      * @see Binding::getDeletedObject()
@@ -285,7 +285,7 @@ abstract class Binding
      *
      * @uses Binding::getUpdatedObject()
      *
-     * @return Object|null `NULL` if the specified object cannot be found or cannot be updated as requested
+     * @return AbstractObject|null `NULL` if the specified object cannot be found or cannot be updated as requested
      */
     public function update($id, $params)
     {
@@ -315,7 +315,7 @@ abstract class Binding
      *
      * @param integer|string $id
      * @param array $params
-     * @return Object|null
+     * @return AbstractObject|null
      *
      * @see Binding::getCreatedObject()
      * @see Binding::getDeletedObject()
@@ -335,12 +335,12 @@ abstract class Binding
      *
      * @uses Binding::getDeletedObject()
      *
-     * @return Object|null `NULL` if the object is not found or cannot be deleted
+     * @return AbstractObject|null `NULL` if the object is not found or cannot be deleted
      */
     public function delete($id, $params = [])
     {
         $object = $this->getDeletedObject($id, $params);
-        if ($object instanceof Object) {
+        if ($object instanceof AbstractObject) {
             $statement = $this->database()->prepare("
                 DELETE FROM `" . $this->databaseTable() . "`
                     WHERE
@@ -364,7 +364,7 @@ abstract class Binding
      * @param integer}string $id Numeric ID of the object to be retrieved
      * @param array $params Associative array of additional request parameters
      *
-     * @return Object|null `NULL` if the object specified cannot be retrieved
+     * @return AbstractObject|null `NULL` if the object specified cannot be retrieved
      *
      * @see Binding::getCreatedObject()
      * @see Binding::getUpdatedObject()
