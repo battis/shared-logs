@@ -3,7 +3,7 @@
 
 namespace Battis\SharedLogs\Objects;
 
-use Battis\SharedLogs\Object;
+use Battis\SharedLogs\AbstractObject;
 
 /**
  * A log entry
@@ -12,7 +12,7 @@ use Battis\SharedLogs\Object;
  *
  * @author Seth Battis <seth@battis.net>
  */
-class Entry extends Object
+class Entry extends AbstractObject
 {
     /** Suppress log sub-object */
     const SUPPRESS_LOG = false;

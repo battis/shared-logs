@@ -108,7 +108,7 @@ class EntriesBinding extends Binding
                 FROM `" . $this->databaseTable() . "`
                 WHERE
                   `" . Log::ID . "` = :id
-                ORDER BY 
+                ORDER BY
                     " . $this->listOrder() . "
         ");
         $list = [];

@@ -9,4 +9,5 @@ namespace Battis\SharedLogs;
  * @author Seth Battis <seth@battis.net>
  */
 class Exception extends \Exception
-{}
+{
+}

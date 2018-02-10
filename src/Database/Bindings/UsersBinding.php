@@ -27,7 +27,8 @@ class UsersBinding extends Binding
         parent::__construct($database, 'users', User::class);
     }
 
-    public function lookupByScreenName($screen_name, $params = []) {
+    public function lookupByScreenName($screen_name, $params = [])
+    {
         $_screen_name = (string) $screen_name;
         if (strlen($_screen_name) >= User::SCREEN_NAME_MINIMUM_LENGTH) {
             $statement = $this->database()->prepare("

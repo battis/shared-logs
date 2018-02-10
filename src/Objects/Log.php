@@ -4,7 +4,7 @@
 namespace Battis\SharedLogs\Objects;
 
 use Battis\SharedLogs\Exceptions\ObjectException;
-use Battis\SharedLogs\Object;
+use Battis\SharedLogs\AbstractObject;
 
 /**
  * A log
@@ -13,7 +13,7 @@ use Battis\SharedLogs\Object;
  *
  * @author Seth Battis <seth@battis.net>
  */
-class Log extends Object
+class Log extends AbstractObject
 {
     /** Suppress device sub-object */
     const SUPPRESS_DEVICE = false;

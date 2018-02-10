@@ -4,7 +4,7 @@
 namespace Battis\SharedLogs\Database;
 
 use Battis\SharedLogs\Exceptions\BindingException;
-use Battis\SharedLogs\Object;
+use Battis\SharedLogs\AbstractObject;
 use PDO;
 
 /**
@@ -28,7 +28,7 @@ abstract class Binding
     private $databaseTable;
 
     /** @var string The class of all objects created by this binding */
-    private $object = Object::class;
+    private $object = AbstractObject::class;
 
     /**
      * Binding constructor
@@ -59,7 +59,10 @@ abstract class Binding
         if ($database instanceof PDO) {
             $this->database = $database;
         } else {
-            throw new BindingException('Cannot create binding without datasbase connector', BindingException::MISSING_DATABASE_CONNECTOR);
+            throw new BindingException(
+                'Cannot create binding without datasbase connector',
+                BindingException::MISSING_DATABASE_CONNECTOR
+            );
         }
     }
 
@@ -162,7 +165,8 @@ abstract class Binding
      *
      * @see Binding::instantiateListedObject()
      */
-    protected function instantiateObject($databaseRow, $params) {
+    protected function instantiateObject($databaseRow, $params)
+    {
         return $this->object($databaseRow);
     }
 
@@ -200,7 +204,8 @@ abstract class Binding
      *
      * @return string
      */
-    protected function listOrder() {
+    protected function listOrder()
+    {
         return '`created` DESC';
     }
 
@@ -219,7 +224,8 @@ abstract class Binding
      *
      * @see Binding::instantiateObject()
      */
-    protected function instantiateListedObject($databaseRow, $params) {
+    protected function instantiateListedObject($databaseRow, $params)
+    {
         return $this->object($databaseRow);
     }
 
@@ -263,7 +269,8 @@ abstract class Binding
      * @see Binding::getUpdatedObject()
      * @see Binding::getDeletedObject()
      */
-    protected function getCreatedObject($id, $params) {
+    protected function getCreatedObject($id, $params)
+    {
         return $this->get($id, $params);
     }
 
@@ -284,7 +291,7 @@ abstract class Binding
     {
         $assignments = [];
         unset($params['id']);
-        foreach(array_keys($params) as $key) {
+        foreach (array_keys($params) as $key) {
             $assignments[] = "`$key` = ':$key'";
         }
         $statement = $this->database()->prepare("
@@ -313,7 +320,8 @@ abstract class Binding
      * @see Binding::getCreatedObject()
      * @see Binding::getDeletedObject()
      */
-    protected function getUpdatedObject($id, $params) {
+    protected function getUpdatedObject($id, $params)
+    {
         return $this->get($id, $params);
     }
 

@@ -3,7 +3,7 @@
 
 namespace Battis\SharedLogs\Objects;
 
-use Battis\SharedLogs\Object;
+use Battis\SharedLogs\AbstractObject;
 
 /**
  * A user
@@ -12,7 +12,7 @@ use Battis\SharedLogs\Object;
  *
  * @author Seth Battis <seth@battis.net>
  */
-class User extends Object
+class User extends AbstractObject
 {
     /** The canonical field name for references to user objects in the database */
     const ID = 'user_id';

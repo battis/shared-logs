@@ -13,7 +13,7 @@ use JsonSerializable;
  *
  * @author Seth Battis <seth@battis.net>
  */
-abstract class Object implements JsonSerializable
+abstract class AbstractObject implements JsonSerializable
 {
     /**
      * Construct an object from the corresponding row of a bound database table
@@ -26,7 +26,7 @@ abstract class Object implements JsonSerializable
      */
     public function __construct($databaseRecord)
     {
-        foreach($this->validateParams($databaseRecord) as $key => $value) {
+        foreach ($this->validateParams($databaseRecord) as $key => $value) {
             $this->$key = $value;
         }
     }
@@ -38,12 +38,16 @@ abstract class Object implements JsonSerializable
      * @return array Filtered and validated
      * @throws ObjectException If no parameters are provided
      */
-    protected function validateParams($databaseRow) {
+    protected function validateParams($databaseRow)
+    {
         /* TODO Convert MySQL timestamp to SOAP timestamp for portability */
         if (is_array($databaseRow)) {
             return $databaseRow;
         } else {
-            throw new ObjectException('No parameters provided to from which construct object', ObjectException::MISSING_DATABASE_RECORD);
+            throw new ObjectException(
+                'No parameters provided to from which construct object',
+                ObjectException::MISSING_DATABASE_RECORD
+            );
         }
     }
 
