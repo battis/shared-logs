@@ -3,6 +3,7 @@
 namespace Battis\SharedLogs\Tests\Objects;
 
 use Battis\SharedLogs\AbstractObject;
+use Battis\SharedLogs\Exceptions\ObjectException;
 use Battis\SharedLogs\Objects\Device;
 use Battis\SharedLogs\Objects\Log;
 use Battis\SharedLogs\Tests\AbstractObjectTest;
@@ -22,11 +23,18 @@ class DeviceTest extends AbstractObjectTest
         $this->logs = [new Log(self::$records['logs'][0]), new Log(self::$records['logs'][0])];
     }
 
+    public function testInvalidInstantiation()
+    {
+        $this->expectException(ObjectException::class);
+        $this->expectExceptionCode(ObjectException::MISSING_DATABASE_RECORD);
+        $d = new Device("foo bar");
+    }
+
     public function testInstantiation()
     {
         $d = new Device($this->device);
-        $this->assertInstanceOf(Device::class, $d);
         $this->reconcileFields($this->device, $d);
+        $this->assertObjectNotHasAttribute('logs', $d);
         return $d;
     }
 
@@ -37,13 +45,12 @@ class DeviceTest extends AbstractObjectTest
     {
         $json = json_encode($d);
         $this->assertJson($json);
-        $this->assertJsonStringEqualsJsonString(json_encode(self::$records['devices'][0]), $json);
+        $this->assertJsonStringEqualsJsonFile(__DIR__ . "/../data/device.json", $json);
     }
 
     public function testInstantiationWithSingleLog()
     {
         $d = new Device($this->device, $this->singleLog);
-        $this->assertInstanceOf(Device::class, $d);
         $this->reconcileFields($this->device, $d);
         $this->assertEquals(1, count($d->logs));
         $this->reconcileFields($this->singleLog[0], $d->logs[0]);
@@ -58,19 +65,12 @@ class DeviceTest extends AbstractObjectTest
     {
         $json = json_encode($d);
         $this->assertJson($json);
-        $this->assertJsonStringEqualsJsonString(
-            json_encode(array_merge(
-                $this->device,
-                ['logs' => $this->singleLog]
-            )),
-            $json
-        );
+        $this->assertJsonStringEqualsJsonFile(__DIR__ . '/../data/deviceWithSingleLog.json', $json);
     }
 
     public function testInstantiationWithMultipleLogs()
     {
         $d = new Device($this->device, $this->logs);
-        $this->assertInstanceOf(Device::class, $d);
         $this->reconcileFields($this->device, $d);
         for ($i = 0; $i < count($this->logs); $i++) {
             $this->reconcileFields($this->logs[$i], $d->logs[$i]);
@@ -86,12 +86,15 @@ class DeviceTest extends AbstractObjectTest
     {
         $json = json_encode($d);
         $this->assertJson($json);
-        $this->assertJsonStringEqualsJsonString(
-            json_encode(array_merge(
-                $this->device,
-                ['logs' => $this->logs]
-            )),
-            $json
-        );
+        $this->assertJsonStringEqualsJsonFile(__DIR__ . '/../data/deviceWithLogs.json', $json);
+    }
+
+    public function testInstantiationWithMismatchedNestedRecords()
+    {
+        $d = new Device($this->device, "foo bar");
+        $this->assertObjectNotHasAttribute('logs', $d);
+
+        $d = new Device($this->device, $this->singleLog[0]);
+        $this->assertObjectNotHasAttribute('logs', $d);
     }
 }

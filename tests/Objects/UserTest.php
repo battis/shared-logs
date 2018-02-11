@@ -3,6 +3,7 @@
 namespace Battis\SharedLogs\Tests\Objects;
 
 use Battis\SharedLogs\AbstractObject;
+use Battis\SharedLogs\Exceptions\ObjectException;
 use Battis\SharedLogs\Objects\User;
 use Battis\SharedLogs\Tests\AbstractObjectTest;
 
@@ -14,6 +15,13 @@ class UserTest extends AbstractObjectTest
     {
         parent::setUp();
         $this->user = self::$records['users'][0];
+    }
+
+    public function testInvalidInstantiation()
+    {
+        $this->expectException(ObjectException::class);
+        $this->expectExceptionCode(ObjectException::MISSING_DATABASE_RECORD);
+        $u = new User("foo bar");
     }
 
     public function testInstantiation()
@@ -31,8 +39,11 @@ class UserTest extends AbstractObjectTest
     public function testJsonSerialization(AbstractObject $u)
     {
         $json = json_encode($u);
+
+        /* user object should suppress password field */
         $record = $this->user;
         unset($record['password']);
+
         $this->assertJson($json);
         $this->assertJsonStringEqualsJsonString(json_encode($record), $json);
     }

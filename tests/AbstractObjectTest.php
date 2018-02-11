@@ -29,6 +29,8 @@ abstract class AbstractObjectTest extends TestCase
      */
     abstract public function testInstantiation();
 
+    abstract public function testInvalidInstantiation();
+
     /**
      * @depends testInstantiation
      */
