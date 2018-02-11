@@ -20,7 +20,7 @@ class DeviceTest extends AbstractObjectTest
         parent::setUp();
         $this->device = self::$records['devices'][0];
         $this->singleLog = [new Log(self::$records['logs'][0])];
-        $this->logs = [new Log(self::$records['logs'][0]), new Log(self::$records['logs'][0])];
+        $this->logs = [new Log(self::$records['logs'][0]), new Log(self::$records['logs'][1])];
     }
 
     public function testInvalidInstantiation()
