@@ -14,5 +14,8 @@ class ObjectException extends Exception
 {
     /** Error code indicating that the object did not receive a database record */
     const MISSING_DATABASE_RECORD = 100;
+    /*
+    TODO this would be a good thing to check
     const NESTED_RECORD_MISMATCH = 101;
+     */
 }
