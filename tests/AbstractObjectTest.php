@@ -9,11 +9,12 @@ use Symfony\Component\Yaml\Yaml;
 abstract class AbstractObjectTest extends TestCase
 {
     protected static $records;
+    protected static $jsonDir = __DIR__ . '/data/json';
 
     protected function setUp()
     {
         if (empty($this->records)) {
-            self::$records = Yaml::parseFile(__DIR__ . '/data/base.yml');
+            self::$records = Yaml::parseFile(__DIR__ . '/data/yml/base.yml');
         }
     }
 

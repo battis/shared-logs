@@ -13,9 +13,12 @@ class EntryTest extends AbstractObjectTest
 {
     protected $entry;
     protected $log;
-    protected $wrongLog;
     protected $user;
+    /*
+    TODO
+    protected $wrongLog;
     protected $wrongUser;
+    */
 
     protected function setUp()
     {
@@ -51,7 +54,7 @@ class EntryTest extends AbstractObjectTest
     {
         $json = json_encode($e);
         $this->assertJson($json);
-        $this->assertJsonStringEqualsJsonString(json_encode($this->entry), $json);
+        $this->assertJsonStringEqualsJsonFile(self::$jsonDir . '/entry.json', $json);
     }
 
     public function testInstantiationWithLog()
@@ -71,7 +74,7 @@ class EntryTest extends AbstractObjectTest
     {
         $json = json_encode($e);
         $this->assertJson($json);
-        $this->assertJsonStringEqualsJsonString(json_encode(array_merge($this->entry, ['log' => $this->log])), $json);
+        $this->assertJsonStringEqualsJsonFile(self::$jsonDir . '/entryWithLog.json', $json);
     }
 
     public function testInstantiationWithUser()
@@ -91,7 +94,7 @@ class EntryTest extends AbstractObjectTest
     {
         $json = json_encode($e);
         $this->assertJson($json);
-        $this->assertJsonStringEqualsJsonString(json_encode(array_merge($this->entry, ['user' => $this->user])), $json);
+        $this->assertJsonStringEqualsJsonFile(self::$jsonDir . '/entryWithUser.json', $json);
     }
 
     public function testInstantiationWithLogAndUser()
@@ -111,13 +114,7 @@ class EntryTest extends AbstractObjectTest
     {
         $json = json_encode($e);
         $this->assertJson($json);
-        $this->assertJsonStringEqualsJsonString(json_encode(array_merge(
-            $this->entry,
-            [
-                'log' => $this->log,
-                'user' => $this->user
-            ]
-        )), $json);
+        $this->assertJsonStringEqualsJsonFile(self::$jsonDir . '/entryWithLogAndUser.json', $json);
     }
 
     public function testInstantiationWithMismatchedNestedRecords()

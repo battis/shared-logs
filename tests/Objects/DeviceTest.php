@@ -45,7 +45,7 @@ class DeviceTest extends AbstractObjectTest
     {
         $json = json_encode($d);
         $this->assertJson($json);
-        $this->assertJsonStringEqualsJsonFile(__DIR__ . "/../data/device.json", $json);
+        $this->assertJsonStringEqualsJsonFile(self::$jsonDir . '/device.json', $json);
     }
 
     public function testInstantiationWithSingleLog()
@@ -65,7 +65,7 @@ class DeviceTest extends AbstractObjectTest
     {
         $json = json_encode($d);
         $this->assertJson($json);
-        $this->assertJsonStringEqualsJsonFile(__DIR__ . '/../data/deviceWithSingleLog.json', $json);
+        $this->assertJsonStringEqualsJsonFile(self::$jsonDir . '/deviceWithSingleLog.json', $json);
     }
 
     public function testInstantiationWithMultipleLogs()
@@ -86,7 +86,7 @@ class DeviceTest extends AbstractObjectTest
     {
         $json = json_encode($d);
         $this->assertJson($json);
-        $this->assertJsonStringEqualsJsonFile(__DIR__ . '/../data/deviceWithLogs.json', $json);
+        $this->assertJsonStringEqualsJsonFile(self::$jsonDir . '/deviceWithLogs.json', $json);
     }
 
     public function testInstantiationWithMismatchedNestedRecords()

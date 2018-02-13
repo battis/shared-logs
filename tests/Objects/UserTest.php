@@ -39,12 +39,7 @@ class UserTest extends AbstractObjectTest
     public function testJsonSerialization(AbstractObject $u)
     {
         $json = json_encode($u);
-
-        /* user object should suppress password field */
-        $record = $this->user;
-        unset($record['password']);
-
         $this->assertJson($json);
-        $this->assertJsonStringEqualsJsonString(json_encode($record), $json);
+        $this->assertJsonStringEqualsJsonFile(self::$jsonDir . '/user.json', $json);
     }
 }
