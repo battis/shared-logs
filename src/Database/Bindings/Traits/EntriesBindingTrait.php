@@ -3,7 +3,7 @@
 
 namespace Battis\SharedLogs\Database\Bindings\Traits;
 
-use Battis\SharedLogs\Database\Binding;
+use Battis\SharedLogs\Database\AbstractBinding;
 use Battis\SharedLogs\Database\Bindings\EntriesBinding;
 
 /**
@@ -19,7 +19,7 @@ trait EntriesBindingTrait
     /**
      * Provide an instance of EntriesBinding
      *
-     * @uses Binding::database()
+     * @uses AbstractBinding::database()
      *
      * @return EntriesBinding
      */

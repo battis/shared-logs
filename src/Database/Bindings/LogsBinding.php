@@ -3,7 +3,7 @@
 
 namespace Battis\SharedLogs\Database\Bindings;
 
-use Battis\SharedLogs\Database\Binding;
+use Battis\SharedLogs\Database\AbstractBinding;
 use Battis\SharedLogs\Database\Bindings\Traits\DevicesBindingTrait;
 use Battis\SharedLogs\Database\Bindings\Traits\EntriesBindingTrait;
 use Battis\SharedLogs\Database\Bindings\Traits\LogsBindingTrait;
@@ -17,12 +17,13 @@ use PDO;
  *
  * @author Seth Battis <seth@battis.net>
  */
-class LogsBinding extends Binding
+class LogsBinding extends AbstractBinding
 {
     use LogsBindingTrait, DevicesBindingTrait, EntriesBindingTrait;
 
     const INCLUDE_DEVICE = 'device';
     const INCLUDE_ENTRIES = 'entries';
+    const INCLUDE_RECENT_ENTRIES = 'recent';
 
     /**
      * Construct a logs binding from a database connector
@@ -45,7 +46,7 @@ class LogsBinding extends Binding
      *
      * @return Object[]
      */
-    public function all($params = [self::INCLUDE => [self::INCLUDE_DEVICE]])
+    public function all($params = [self::SCOPE_INCLUDE => [self::INCLUDE_DEVICE]])
     {
         return parent::all($params);
     }
@@ -60,7 +61,7 @@ class LogsBinding extends Binding
      *
      * @return Log|null
      */
-    public function get($id, $params = [self::INCLUDE => [self::INCLUDE_DEVICE]])
+    public function get($id, $params = [self::SCOPE_INCLUDE => [self::INCLUDE_DEVICE]])
     {
         return parent::get($id, $params);
     }
@@ -79,14 +80,22 @@ class LogsBinding extends Binding
     {
         $device = Log::SUPPRESS_DEVICE;
         $entries = Log::SUPPRESS_ENTRIES;
-        if (!empty($params[self::INCLUDE]) && is_array($params[self::INCLUDE])) {
-            if (in_array(self::INCLUDE_DEVICE, $params[self::INCLUDE])) {
-                $device = $this->devices()->get($databaseRow[Device::ID], [self::INCLUDE => []]);
-            }
-            if (in_array(self::INCLUDE_ENTRIES, $params[self::INCLUDE])) {
-                $entries = $this->entries()->listByLog($databaseRow['id']);
-            }
+        if (self::parameterValueExists($params, self::SCOPE_INCLUDE, self::INCLUDE_DEVICE)) {
+            $params = self::consumeParameterValue($params, self::SCOPE_INCLUDE, self::INCLUDE_DEVICE);
+            $params = self::consumeParameterValue($params, self::SCOPE_INCLUDE, DevicesBinding::INCLUDE_LOGS);
+            $device = $this->devices()->get($databaseRow[Device::ID], $params);
         }
+        if (self::parameterValueExists($params,self::SCOPE_INCLUDE, self::INCLUDE_ENTRIES)) {
+            $params = self::consumeParameterValue($params, self::SCOPE_INCLUDE, self::INCLUDE_ENTRIES);
+            $params = self::consumeParameterValue($params, self::SCOPE_INCLUDE, EntriesBinding::INCLUDE_LOG);
+            $entries = $this->entries()->listByLog($databaseRow['id'], $params);
+        } elseif (self::parameterValueExists($params, self::SCOPE_INCLUDE, self::INCLUDE_RECENT_ENTRIES)) {
+            $params = self::consumeParameterValue($params, self::SCOPE_INCLUDE, self::INCLUDE_RECENT_ENTRIES);
+            $params = self::consumeParameterValue($params, self::SCOPE_INCLUDE, EntriesBinding::INCLUDE_LOG);
+            $params[EntriesBinding::SCOPE_COUNT] = 1;
+            $entries = $this->entries()->listByLog($databaseRow['id'], $params);
+        }
+
         return $this->object($databaseRow, $device, $entries);
     }
 
@@ -119,7 +128,7 @@ class LogsBinding extends Binding
      *
      * @return Log[]
      */
-    public function listByDevice($id, $params = [self::INCLUDE => []])
+    public function listByDevice($id, $params = [])
     {
         $statement = $this->database()->prepare("
             SELECT *

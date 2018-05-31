@@ -3,7 +3,7 @@
 
 namespace Battis\SharedLogs\Database\Bindings\Traits;
 
-use Battis\SharedLogs\Database\Binding;
+use Battis\SharedLogs\Database\AbstractBinding;
 use Battis\SharedLogs\Database\Bindings\LogsBinding;
 
 /**
@@ -17,7 +17,7 @@ trait LogsBindingTrait
     /**
      * Provide an instance of LogsBinding
      *
-     * @uses Binding::database()
+     * @uses AbstractBinding::database()
      *
      * @return LogsBinding
      */

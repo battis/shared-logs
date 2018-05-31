@@ -3,7 +3,7 @@
 
 namespace Battis\SharedLogs\Database\Bindings;
 
-use Battis\SharedLogs\Database\Binding;
+use Battis\SharedLogs\Database\AbstractBinding;
 use Battis\SharedLogs\Database\Bindings\Traits\EntriesBindingTrait;
 use Battis\SharedLogs\Database\Bindings\Traits\LogsBindingTrait;
 use Battis\SharedLogs\Database\Bindings\Traits\UsersBindingTrait;
@@ -18,9 +18,11 @@ use PDO;
  *
  * @author Seth Battis <seth@battis.net>
  */
-class EntriesBinding extends Binding
+class EntriesBinding extends AbstractBinding
 {
     use EntriesBindingTrait, LogsBindingTrait, UsersBindingTrait;
+
+    const SCOPE_COUNT = 'count';
 
     const INCLUDE_USER = 'user';
     const INCLUDE_LOG = 'log';
@@ -47,7 +49,7 @@ class EntriesBinding extends Binding
      *
      * @return Entry|null
      */
-    public function get($id, $params = [self::INCLUDE => [self::INCLUDE_LOG, self::INCLUDE_USER]])
+    public function get($id, $params = [self::SCOPE_INCLUDE => [self::INCLUDE_LOG, self::INCLUDE_USER]])
     {
         return parent::get($id, $params);
     }
@@ -66,13 +68,14 @@ class EntriesBinding extends Binding
     {
         $log = Entry::SUPPRESS_LOG;
         $user = Entry::SUPPRESS_USER;
-        if (!empty($params[self::INCLUDE]) && is_array($params[self::INCLUDE])) {
-            if (in_array(self::INCLUDE_LOG, $params[self::INCLUDE])) {
-                $log = $this->logs()->get($databaseRow[Log::ID], [self::INCLUDE => []]);
-            }
-            if (in_array(self::INCLUDE_USER, $params[self::INCLUDE])) {
-                $user = $this->users()->get($databaseRow[User::ID], [self::INCLUDE => []]);
-            }
+        if (self::parameterValueExists($params,self::SCOPE_INCLUDE,self::INCLUDE_LOG)) {
+            $params = self::consumeParameterValue($params,self::SCOPE_INCLUDE,self::INCLUDE_LOG);
+            $params = self::consumeParameterValue($params,self::SCOPE_INCLUDE,LogsBinding::INCLUDE_ENTRIES);
+            $log = $this->logs()->get($databaseRow[Log::ID], $params);
+        }
+        if (self::parameterValueExists($params, self::SCOPE_INCLUDE, self::INCLUDE_USER)) {
+            $params = self::consumeParameterValue($params, self::SCOPE_INCLUDE,self::INCLUDE_USER);
+            $user = $this->users()->get($databaseRow[User::ID], $params);
         }
         return $this->object($databaseRow, $log, $user);
     }
@@ -95,13 +98,13 @@ class EntriesBinding extends Binding
     /**
      * Retrieve all entries in a specific log, by log ID
      *
-     * By default, entries retrieived by this method contain user sub-object, but _not_ a log sub-object.
+     * By default, entries retrieved by this method contain user sub-object, but _not_ a log sub-object.
      *
      * @param integer|string $id Numeric log ID
      * @param array $params (Optional) Associative array of additional request parameters
      * @return Entry[]
      */
-    public function listByLog($id, $params = [self::INCLUDE => [self::INCLUDE_USER]])
+    public function listByLog($id, $params = [self::SCOPE_INCLUDE => [self::INCLUDE_USER]])
     {
         $statement = $this->database()->prepare("
             SELECT *
@@ -110,6 +113,7 @@ class EntriesBinding extends Binding
                   `" . Log::ID . "` = :id
                 ORDER BY
                     " . $this->listOrder() . "
+                " . (($count = self::getScope($params, self::SCOPE_COUNT) !== null) ? "LIMIT $count" : "") . "
         ");
         $list = [];
         if ($statement->execute(['id' => $id])) {

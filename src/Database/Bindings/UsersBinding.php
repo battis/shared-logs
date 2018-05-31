@@ -3,7 +3,7 @@
 
 namespace Battis\SharedLogs\Database\Bindings;
 
-use Battis\SharedLogs\Database\Binding;
+use Battis\SharedLogs\Database\AbstractBinding;
 use Battis\SharedLogs\Exceptions\BindingException;
 use Battis\SharedLogs\Objects\User;
 use PDO;
@@ -13,7 +13,7 @@ use PDO;
  *
  * @author Seth Battis <seth@battis.net>
  */
-class UsersBinding extends Binding
+class UsersBinding extends AbstractBinding
 {
 
     /**

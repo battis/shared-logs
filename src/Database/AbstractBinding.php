@@ -16,11 +16,8 @@ use PDO;
  * TODO Convert database errors into clearer API responses
  * TODO Add search capabilities to all()
  */
-abstract class Binding
+abstract class AbstractBinding extends Parameters
 {
-    /** Canonical name for field in additional request parameters containing the list of additional sub-objects */
-    const INCLUDE = 'include';
-
     /** @var PDO Database connector */
     private $database;
 
@@ -130,7 +127,7 @@ abstract class Binding
      * @param integer|string $id A valid numeric object ID
      * @param array $params (Optional) Associative array of additional request parameters
      *
-     * @uses Binding::instantiateObject()
+     * @uses AbstractBinding::instantiateObject()
      *
      * @return AbstractObject|null `NULL` if no object is found in database
      */
@@ -156,14 +153,14 @@ abstract class Binding
      * Presumably similar to the instantiation when retrieved via `all()`, but there may be some desire to, for example,
      * limit the depth of nested subobjects in the context of a list.
      *
-     * @used-by Binding::get()
+     * @used-by AbstractBinding::get()
      *
      * @param array $databaseRow Bound row of database table
      * @param array $params Associative array of additional request parameters
      *
      * @return AbstractObject
      *
-     * @see Binding::instantiateListedObject()
+     * @see AbstractBinding::instantiateListedObject()
      */
     protected function instantiateObject($databaseRow, $params)
     {
@@ -175,8 +172,8 @@ abstract class Binding
      *
      * @param array $params (Optional) Associative array of additional request parameters
      *
-     * @uses Binding::listOrder()
-     * @uses Binding::instantiateListedObject()
+     * @uses AbstractBinding::listOrder()
+     * @uses AbstractBinding::instantiateListedObject()
      *
      * @return AbstractObject[]
      */
@@ -198,9 +195,9 @@ abstract class Binding
     /**
      * Configure ordering of list of bound objects
      *
-     * The default ordering is to sort the list by descendig creation date (most recent first)
+     * The default ordering is to sort the list by descending creation date (most recent first)
      *
-     * @used-by Binding::all()
+     * @used-by AbstractBinding::all()
      *
      * @return string
      */
@@ -215,14 +212,14 @@ abstract class Binding
      * Presumably similar to the instantiation when retrieved via `get()`, but there may be some desire to, for example,
      * limit the depth of nested subobjects in the context of a list.
      *
-     * @used-by Binding::all()
+     * @used-by AbstractBinding::all()
      *
      * @param array $databaseRow Associative array of fields from database to initialize object
      * @param array $params Associative array of additional request parameters
      *
      * @return AbstractObject
      *
-     * @see Binding::instantiateObject()
+     * @see AbstractBinding::instantiateObject()
      */
     protected function instantiateListedObject($databaseRow, $params)
     {
@@ -235,7 +232,7 @@ abstract class Binding
      * @param array $params Associative array of fields to initialize in created Object (will potentially be passed on
      *        as additional request parameters to `get()`)
      *
-     * @uses Binding::getCreatedObject()
+     * @uses AbstractBinding::getCreatedObject()
      *
      * @return AbstractObject|null `NULL` if the object cannot be created in the database
      */
@@ -259,15 +256,15 @@ abstract class Binding
      * The default implementation of this method simply passes the ID on to `get()` to retrieve and return the recently
      * created object. Presumably similar to `getUpdatedObject()` or `getDeletedObject()`.
      *
-     * @used-by Binding::create()
+     * @used-by AbstractBinding::create()
      *
      * @param integer|string $id Numeric ID of recently created object in database
      * @param array $params Associative array of additional request parameters
      *
      * @return AbstractObject|null `NULL` if object cannot be retrieved from database
      *
-     * @see Binding::getUpdatedObject()
-     * @see Binding::getDeletedObject()
+     * @see AbstractBinding::getUpdatedObject()
+     * @see AbstractBinding::getDeletedObject()
      */
     protected function getCreatedObject($id, $params)
     {
@@ -283,7 +280,7 @@ abstract class Binding
      * @param array $params Associative array of fields to be updated (will also be potentially passed to `get()` as
      *        additional request parameters
      *
-     * @uses Binding::getUpdatedObject()
+     * @uses AbstractBinding::getUpdatedObject()
      *
      * @return AbstractObject|null `NULL` if the specified object cannot be found or cannot be updated as requested
      */
@@ -317,8 +314,8 @@ abstract class Binding
      * @param array $params
      * @return AbstractObject|null
      *
-     * @see Binding::getCreatedObject()
-     * @see Binding::getDeletedObject()
+     * @see AbstractBinding::getCreatedObject()
+     * @see AbstractBinding::getDeletedObject()
      */
     protected function getUpdatedObject($id, $params)
     {
@@ -333,7 +330,7 @@ abstract class Binding
      * @param integer|string $id Numeric ID of the object to be deleted
      * @param array $params (Optional) Associative array of additional request parameters
      *
-     * @uses Binding::getDeletedObject()
+     * @uses AbstractBinding::getDeletedObject()
      *
      * @return AbstractObject|null `NULL` if the object is not found or cannot be deleted
      */
@@ -359,15 +356,15 @@ abstract class Binding
      * The default implementation of this method simply passes the ID on to `get()` to retrieve and return the
      * soon-to-be deleted object. Presumably similar to `getCreatedObject()` and `getUpdatedObject()`.
      *
-     * @used-by Binding::delete()
+     * @used-by AbstractBinding::delete()
      *
      * @param integer}string $id Numeric ID of the object to be retrieved
      * @param array $params Associative array of additional request parameters
      *
      * @return AbstractObject|null `NULL` if the object specified cannot be retrieved
      *
-     * @see Binding::getCreatedObject()
-     * @see Binding::getUpdatedObject()
+     * @see AbstractBinding::getCreatedObject()
+     * @see AbstractBinding::getUpdatedObject()
      */
     protected function getDeletedObject($id, $params)
     {
