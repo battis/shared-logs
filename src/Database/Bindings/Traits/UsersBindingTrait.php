@@ -9,7 +9,7 @@ use Battis\SharedLogs\Database\Bindings\UsersBinding;
 /**
  * Provide an as-needed instance of UsersBinding
  *
- * @author Seth Battis <sseth@battis.net>
+ * @author Seth Battis <seth@battis.net>
  */
 trait UsersBindingTrait
 {

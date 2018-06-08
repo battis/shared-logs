@@ -18,7 +18,7 @@ class User extends AbstractObject
     const ID = 'user_id';
 
     /** Minimum length of a `screen_name` */
-    const SCREEN_NAME_MINIMUM_LENGTH = 4;
+    const SCREEN_NAME_MINIMUM_LENGTH = 3;
 
     /**
      * Prepare the User object for JSON serialization

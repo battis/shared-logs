@@ -92,25 +92,13 @@ class LogsBinding extends AbstractBinding
         } elseif (self::parameterValueExists($params, self::SCOPE_INCLUDE, self::INCLUDE_RECENT_ENTRIES)) {
             $params = self::consumeParameterValue($params, self::SCOPE_INCLUDE, self::INCLUDE_RECENT_ENTRIES);
             $params = self::consumeParameterValue($params, self::SCOPE_INCLUDE, EntriesBinding::INCLUDE_LOG);
-            $params[EntriesBinding::SCOPE_COUNT] = 1;
+            $params[EntriesBinding::SCOPE_ENTRIES][EntriesBinding::ENTRIES_COUNT] = 1;
             $entries = $this->entries()->listByLog($databaseRow['id'], $params);
         }
 
         return $this->object($databaseRow, $device, $entries);
     }
 
-    /**
-     * Instantiate a log retrieved via `all()` or `listByDevice()`
-     *
-     * @used-by LogsBinding::listByDevice()
-     *
-     * @param array $databaseRow
-     * @param array $params
-     *
-     * @uses LogsBinding::instantiateObject()
-     *
-     * @return Log
-     */
     protected function instantiateListedObject($databaseRow, $params)
     {
         return $this->instantiateObject($databaseRow, $params);

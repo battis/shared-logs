@@ -10,6 +10,8 @@ use Battis\SharedLogs\AbstractObject;
  *
  * Log entries are timestamped notes authored by users and referring to a specific device.
  *
+ * @property Log log
+ * @property User user
  * @author Seth Battis <seth@battis.net>
  */
 class Entry extends AbstractObject

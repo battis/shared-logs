@@ -8,6 +8,8 @@ use Battis\SharedLogs\Database\Bindings\LogsBinding;
 
 /**
  * Provide an as-needed LogsBinding instance
+ *
+ * @author Seth Battis <seth@battis.net>
  */
 trait LogsBindingTrait
 {

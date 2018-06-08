@@ -22,7 +22,8 @@ class EntriesBinding extends AbstractBinding
 {
     use EntriesBindingTrait, LogsBindingTrait, UsersBindingTrait;
 
-    const SCOPE_COUNT = 'count';
+    const SCOPE_ENTRIES = 'entries';
+    const ENTRIES_COUNT = 'count';
 
     const INCLUDE_USER = 'user';
     const INCLUDE_LOG = 'log';
@@ -80,16 +81,6 @@ class EntriesBinding extends AbstractBinding
         return $this->object($databaseRow, $log, $user);
     }
 
-    /**
-     * Instantiate an entry retrieved via `all()`
-     *
-     * @param array $databaseRow
-     * @param array $params
-     *
-     * @uses EntriesBinding::instantiateObject()
-     *
-     * @return Entry
-     */
     protected function instantiateListedObject($databaseRow, $params)
     {
         return $this->instantiateObject($databaseRow, $params);
@@ -106,6 +97,7 @@ class EntriesBinding extends AbstractBinding
      */
     public function listByLog($id, $params = [self::SCOPE_INCLUDE => [self::INCLUDE_USER]])
     {
+        $count = self::getParameterValue($params, self::SCOPE_ENTRIES, self::ENTRIES_COUNT, false);
         $statement = $this->database()->prepare("
             SELECT *
                 FROM `" . $this->databaseTable() . "`
@@ -113,7 +105,7 @@ class EntriesBinding extends AbstractBinding
                   `" . Log::ID . "` = :id
                 ORDER BY
                     " . $this->listOrder() . "
-                " . (($count = self::getScope($params, self::SCOPE_COUNT) !== null) ? "LIMIT $count" : "") . "
+                " . ($count ? "LIMIT $count" : "") . "
         ");
         $list = [];
         if ($statement->execute(['id' => $id])) {

@@ -11,6 +11,8 @@ use Battis\SharedLogs\AbstractObject;
  *
  * Logs are collections of timestamped entries authored by users about a specific device.
  *
+ * @property Device device
+ * @property Entry[] entries
  * @author Seth Battis <seth@battis.net>
  */
 class Log extends AbstractObject

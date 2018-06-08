@@ -16,7 +16,7 @@ use PDO;
  * TODO Convert database errors into clearer API responses
  * TODO Add search capabilities to all()
  */
-abstract class AbstractBinding extends Parameters
+abstract class AbstractBinding extends ParameterManager
 {
     /** @var PDO Database connector */
     private $database;

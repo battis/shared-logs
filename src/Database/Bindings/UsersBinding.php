@@ -43,4 +43,9 @@ class UsersBinding extends AbstractBinding
         }
         return null;
     }
+
+    protected function instantiateListedObject($databaseRow, $params)
+    {
+        return $this->instantiateObject($databaseRow, $params);
+    }
 }

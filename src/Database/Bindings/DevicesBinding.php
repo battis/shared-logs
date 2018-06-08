@@ -6,9 +6,11 @@ namespace Battis\SharedLogs\Database\Bindings;
 use Battis\SharedLogs\Database\AbstractBinding;
 use Battis\SharedLogs\Database\Bindings\Traits\DevicesBindingTrait;
 use Battis\SharedLogs\Database\Bindings\Traits\LogsBindingTrait;
-use Battis\SharedLogs\Database\Parameters;
+use Battis\SharedLogs\Database\Bindings\Traits\UrlsBindingTrait;
+use Battis\SharedLogs\Database\ParameterManager;
 use Battis\SharedLogs\Exceptions\BindingException;
 use Battis\SharedLogs\Objects\Device;
+use Battis\SharedLogs\Objects\Url;
 use PDO;
 
 /**
@@ -18,9 +20,10 @@ use PDO;
  */
 class DevicesBinding extends AbstractBinding
 {
-    use DevicesBindingTrait, LogsBindingTrait;
+    use DevicesBindingTrait, UrlsBindingTrait, LogsBindingTrait;
 
     const INCLUDE_LOGS = 'logs';
+    const INCLUDE_URLS = 'urls';
 
     /**
      * Construct a device binding from a database connector
@@ -43,7 +46,7 @@ class DevicesBinding extends AbstractBinding
      *
      * @return Device[]
      */
-    public function all($params = [self::SCOPE_INCLUDE => [self::INCLUDE_LOGS]])
+    public function all($params = [self::SCOPE_INCLUDE => [self::INCLUDE_LOGS, self::INCLUDE_URLS]])
     {
         return parent::all($params);
     }
@@ -72,7 +75,7 @@ class DevicesBinding extends AbstractBinding
      *
      * @return Device|null
      */
-    public function get($id, $params = [self::SCOPE_INCLUDE => [self::INCLUDE_LOGS]])
+    public function get($id, $params = [self::SCOPE_INCLUDE => [self::INCLUDE_LOGS, self::INCLUDE_URLS]])
     {
         return parent::get($id, $params);
     }
@@ -94,27 +97,21 @@ class DevicesBinding extends AbstractBinding
      */
     protected function instantiateObject($databaseRow, $params)
     {
+        $urls = Device::SUPPRESS_URLS;
         $logs = Device::SUPPRESS_LOGS;
+        if (self::parameterValueExists($params, self::SCOPE_INCLUDE, self::INCLUDE_URLS)) {
+            $params = self::consumeParameterValue($params, self::SCOPE_INCLUDE, self::INCLUDE_URLS);
+            $params = self::consumeParameterValue($params, self::SCOPE_INCLUDE, UrlsBinding::INCLUDE_DEVICE);
+            $urls = $this->urls()->listByDevice($databaseRow['id'], $params);
+        }
         if (self::parameterValueExists($params, self::SCOPE_INCLUDE, self::INCLUDE_LOGS)) {
             $params = self::consumeParameterValue($params, self::SCOPE_INCLUDE, self::INCLUDE_LOGS);
             $params = self::consumeParameterValue($params, self::SCOPE_INCLUDE, LogsBinding::INCLUDE_DEVICE);
             $logs = $this->logs()->listByDevice($databaseRow['id'], $params);
         }
-        return $this->object($databaseRow, $logs);
+        return $this->object($databaseRow, $logs, $urls);
     }
 
-    /**
-     * Instantiate bound device when retrieved via `all()`
-     *
-     * This will process the `'includes'` field of `$params` (an array) and, if it contains the term `'logs'`, the list
-     * of logs sub-object will be included in this device object.
- * @param array $databaseRow
-     * @param array $params
-     *
-     * @uses DevicesBinding::instantiateObject()
-     *
-     * @return Device
-     */
     protected function instantiateListedObject($databaseRow, $params)
     {
         return $this->instantiateObject($databaseRow, $params);
