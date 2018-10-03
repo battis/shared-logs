@@ -62,7 +62,7 @@ class DevicesBinding extends AbstractBinding
      */
     protected function listOrder()
     {
-        return '`manufacturer` ASC, `model` ASC, `name` ASC, `created` DESC';
+        return '`group` ASC, `manufacturer` ASC, `model` ASC, `name` ASC, `created` DESC';
     }
 
     /**
