@@ -7,6 +7,7 @@ CREATE TABLE `devices` (
   `manufacturer` text COMMENT 'Manufacturer name (may be `NULL`)',
   `model` text COMMENT 'Model name (may be `NULL`)',
   `name` text COMMENT 'Common name (may be `NULL`)',
+  `description` longtext COMMENT 'Additional information (may be `NULL`)', 
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp of record creation',
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Timestamp of last record modification',
   PRIMARY KEY (`id`),
